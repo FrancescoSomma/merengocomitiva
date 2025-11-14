@@ -1,0 +1,61 @@
+Sviluppa un’applicazione React per giocare a Little Secret
+
+OBIETTIVO
+
+Voglio che tu sviluppi un’applicazione React solo frontend,
+completamente responsive e mobile-first, che permetta di giocare a
+Little Secret seguendo le regole ufficiali del gioco.
+
+L’applicazione sarà deployata su Vercel e dovrà funzionare in locale su
+un solo dispositivo: solo una persona del gruppo apre l’app, e la usa
+per far vedere segretamente le parole ai giocatori.
+
+STACK TECNICO
+
+-   Vite
+-   Yarn
+-   React
+-   Redux Toolkit (store, slice, actions, selectors)
+-   UI framework consigliato: Mantine
+-   React Router
+-   Mobile-first
+-   Nessun backend
+-   Stato solo in RAM
+
+SCHERMATE
+
+1)  Schermata di Partenza
+2)  Schermata Inserimento Giocatori
+3)  Schermata Mostra Parola
+4)  Fase di Gioco + Summary
+
+NOTE DI GIOCO
+
+-   Genera un file JSON con 100 coppie di parole simili.
+-   Ruoli: 1 Giornalista, 1 Impostore, resto Discepoli.
+-   Discepoli e Impostore NON conoscono il loro ruolo.
+
+REQUISITI REDUX
+
+gameSlice: - players - words - selectedPair - gameStep -
+currentPlayerIndex - actions
+
+UI/UX
+
+-   Mobile-first
+-   Mantine
+-   Componenti semplici
+-   Animazioni leggere
+-   Aspetto accattivante
+
+STRUTTURA PROGETTO
+
+src/ components/ pages/ store/ data/ App.jsx main.jsx router.jsx
+
+OUTPUT RICHIESTO
+
+-   Progetto completo React + Redux + Mantine
+-   words.json con 100 coppie
+-   Codice completo
+-   No TypeScript
+-   Funzionante end-to-end
