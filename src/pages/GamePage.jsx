@@ -68,11 +68,7 @@ function GamePage() {
         showRole: true,
         role: journalists.length > 1 ? "Giornalista" : "Il Giornalista",
         word: "🔍 GIORNALISTA",
-        description:
-          "Il tuo compito è scoprire " +
-          (impostors.length > 1
-            ? "chi sono gli Impostori"
-            : "chi è l'Impostore"),
+        description: "Il tuo compito è scoprire la parola dei Discepoli",
       };
     } else if (isImpostor) {
       return {
@@ -314,9 +310,7 @@ function GamePage() {
               p="xl"
               radius="md"
               style={{
-                backgroundColor: getPlayerInfo(selectedPlayer).showRole
-                  ? "#d0f4de"
-                  : "#f8f9fa",
+                backgroundColor: "#f8f9fa",
                 border: "2px solid #dee2e6",
               }}
             >
