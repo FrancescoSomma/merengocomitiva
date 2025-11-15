@@ -29,6 +29,7 @@ import {
   selectJournalists,
   selectImpostors,
   selectDisciples,
+  selectPlayerPowers,
   resetGame,
 } from "../store/gameSlice";
 
@@ -40,10 +41,13 @@ function GamePage() {
   const journalists = useSelector(selectJournalists);
   const impostors = useSelector(selectImpostors);
   const disciples = useSelector(selectDisciples);
+  const playerPowers = useSelector(selectPlayerPowers);
 
   const [showSolution, setShowSolution] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+
+  const hasPowers = Object.keys(playerPowers).length > 0;
 
   if (!selectedPair) {
     navigate("/");
@@ -126,6 +130,7 @@ function GamePage() {
             <Divider />
 
             {players.map((player) => {
+              const playerPower = playerPowers[player.id];
               return (
                 <Paper
                   key={player.id}
@@ -140,14 +145,26 @@ function GamePage() {
                     e.currentTarget.style.backgroundColor = "transparent";
                   }}
                 >
-                  <Group justify="space-between">
-                    <Text fw={500} size="md">
-                      {player.name}
-                    </Text>
-                    <Text size="xs" c="dimmed">
-                      Clicca per vedere
-                    </Text>
-                  </Group>
+                  <Stack gap="xs">
+                    <Group justify="space-between">
+                      <Text fw={500} size="md">
+                        {player.name}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        Clicca per vedere
+                      </Text>
+                    </Group>
+                    {hasPowers && playerPower && (
+                      <Group gap="xs">
+                        <Badge color="grape" variant="light" size="sm">
+                          🎯 Potere
+                        </Badge>
+                        <Text size="xs" c="dimmed">
+                          {playerPower}
+                        </Text>
+                      </Group>
+                    )}
+                  </Stack>
                 </Paper>
               );
             })}
@@ -193,8 +210,27 @@ function GamePage() {
                     .
                   </Text>
                 )}
+                {hasPowers && (
+                  <Text size="sm">
+                    <strong>
+                      {journalists.length > 0 ? "4" : "3"}. Usate i poteri
+                    </strong>
+                    <br />
+                    Ogni giocatore ha un potere speciale visibile a tutti.
+                    Usatelo strategicamente!
+                  </Text>
+                )}
                 <Text size="sm">
-                  <strong>{journalists.length > 0 ? "4" : "3"}. Votate</strong>
+                  <strong>
+                    {hasPowers
+                      ? journalists.length > 0
+                        ? "5"
+                        : "4"
+                      : journalists.length > 0
+                      ? "4"
+                      : "3"}
+                    . Votate
+                  </strong>
                   <br />
                   Alla fine, votate per chi pensate{" "}
                   {impostors.length > 1
@@ -343,6 +379,22 @@ function GamePage() {
             <Text size="sm" ta="center" c="dimmed">
               {getPlayerInfo(selectedPlayer).description}
             </Text>
+
+            {hasPowers && playerPowers[selectedPlayer.id] && (
+              <Alert color="grape" variant="light">
+                <Text
+                  size="xs"
+                  fw={600}
+                  mb="xs"
+                  style={{ textTransform: "uppercase" }}
+                >
+                  🎯 Potere di {selectedPlayer.name}
+                </Text>
+                <Text size="sm" fw={500}>
+                  {playerPowers[selectedPlayer.id]}
+                </Text>
+              </Alert>
+            )}
 
             <Alert icon={<IconEyeOff size={18} />} color="red" variant="light">
               <Text size="sm" ta="center">

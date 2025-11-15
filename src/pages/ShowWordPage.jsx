@@ -21,6 +21,7 @@ import {
   selectImpostors,
   selectCurrentPlayerIndex,
   selectPlayers,
+  selectPlayerPowers,
   nextPlayer,
 } from "../store/gameSlice";
 
@@ -33,8 +34,12 @@ function ShowWordPage() {
   const impostors = useSelector(selectImpostors);
   const currentPlayerIndex = useSelector(selectCurrentPlayerIndex);
   const players = useSelector(selectPlayers);
+  const playerPowers = useSelector(selectPlayerPowers);
 
   const [wordVisible, setWordVisible] = useState(false);
+
+  const hasPowers = Object.keys(playerPowers).length > 0;
+  const currentPlayerPower = playerPowers[currentPlayer?.id];
 
   if (!currentPlayer || !selectedPair) {
     navigate("/");
@@ -144,13 +149,32 @@ function ShowWordPage() {
                 </Text>
               </Alert>
             )}
+
+            {hasPowers && wordVisible && currentPlayerPower && (
+              <Alert color="grape" variant="light" style={{ width: "100%" }}>
+                <Text
+                  size="xs"
+                  ta="center"
+                  fw={600}
+                  mb="xs"
+                  style={{ textTransform: "uppercase" }}
+                  c="white"
+                >
+                  🎯 Il Tuo Potere
+                </Text>
+                <Text size="sm" ta="center" fw={500} c="white">
+                  {currentPlayerPower}
+                </Text>
+              </Alert>
+            )}
           </Stack>
         </Paper>
 
         {wordVisible && (
           <Stack gap="md" style={{ width: "100%" }}>
             <Alert icon={<IconEyeOff size={18} />} color="red" variant="light">
-              Memorizza la tua parola e non farla vedere agli altri!
+              Memorizza la tua parola{hasPowers && " e il tuo potere"} e non
+              farli vedere agli altri!
             </Alert>
 
             <Button

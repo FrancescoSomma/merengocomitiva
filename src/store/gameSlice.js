@@ -1,6 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import wordsData from "../data/words.json";
 
+const POWERS = [
+  "Se vieni eliminato, puoi eliminare un altro giocatore assieme a te",
+  "Descrivi la parola mimandola",
+  "Il tuo voto vale doppio",
+  "Rimani in silenzio durante il dibattito",
+  "In caso di parità di voti, scegli il giocatore da eliminare",
+  "Pronuncia 2 parole per descrivere la tua parola",
+];
+
 const initialState = {
   players: [],
   words: wordsData,
@@ -12,6 +21,7 @@ const initialState = {
   disciples: [],
   revealedPlayers: [],
   usedWordIndices: [], // Traccia le parole già usate nella sessione
+  playerPowers: {}, // { playerId: power }
 };
 
 export const gameSlice = createSlice({
@@ -101,6 +111,23 @@ export const gameSlice = createSlice({
       // Il resto sono discepoli
       state.disciples = shuffledPlayers.slice(currentIndex).map((p) => p.id);
 
+      // Assegna i poteri se ci sono 6+ giocatori
+      state.playerPowers = {};
+      if (playerCount >= 6) {
+        // Mescola i poteri disponibili
+        const shuffledPowers = [...POWERS].sort(() => Math.random() - 0.5);
+
+        shuffledPlayers.forEach((player, index) => {
+          if (index < POWERS.length) {
+            // Assegna un potere dalla lista
+            state.playerPowers[player.id] = shuffledPowers[index];
+          } else {
+            // Nessun potere per i giocatori extra
+            state.playerPowers[player.id] = "Non hai nessun potere";
+          }
+        });
+      }
+
       state.gameStep = "show-word";
       state.currentPlayerIndex = 0;
       state.revealedPlayers = [];
@@ -126,6 +153,7 @@ export const gameSlice = createSlice({
       state.revealedPlayers = [];
       state.players = [];
       state.usedWordIndices = []; // Resetta anche le parole usate
+      state.playerPowers = {}; // Resetta i poteri
     },
     setGameStep: (state, action) => {
       state.gameStep = action.payload;
@@ -156,5 +184,6 @@ export const selectCurrentPlayerIndex = (state) =>
   state.game.currentPlayerIndex;
 export const selectRevealedPlayers = (state) => state.game.revealedPlayers;
 export const selectUsedWordIndices = (state) => state.game.usedWordIndices;
+export const selectPlayerPowers = (state) => state.game.playerPowers;
 
 export default gameSlice.reducer;
