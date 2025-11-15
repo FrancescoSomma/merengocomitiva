@@ -25,8 +25,8 @@ import {
 import {
   selectPlayers,
   selectSelectedPair,
-  selectJournalist,
-  selectImpostor,
+  selectJournalists,
+  selectImpostors,
   selectDisciples,
   resetGame,
 } from '../store/gameSlice';
@@ -36,8 +36,8 @@ function GamePage() {
   const dispatch = useDispatch();
   const players = useSelector(selectPlayers);
   const selectedPair = useSelector(selectSelectedPair);
-  const journalist = useSelector(selectJournalist);
-  const impostor = useSelector(selectImpostor);
+  const journalists = useSelector(selectJournalists);
+  const impostors = useSelector(selectImpostors);
   const disciples = useSelector(selectDisciples);
   
   const [showSolution, setShowSolution] = useState(false);
@@ -48,8 +48,8 @@ function GamePage() {
     return null;
   }
 
-  const journalistPlayer = players.find(p => p.id === journalist);
-  const impostorPlayer = players.find(p => p.id === impostor);
+  const journalistPlayers = players.filter(p => journalists.includes(p.id));
+  const impostorPlayers = players.filter(p => impostors.includes(p.id));
   const disciplePlayers = players.filter(p => disciples.includes(p.id));
 
   const handleReset = () => {
@@ -75,7 +75,7 @@ function GamePage() {
               Partita in Corso
             </Title>
             <Text size="lg" ta="center">
-              Fate a turno domande e cercate di scoprire l'impostore!
+              Fate a turno domande e cercate di scoprire {impostors.length > 1 ? 'gli impostori' : "l'impostore"}!
             </Text>
           </Stack>
         </Paper>
@@ -97,8 +97,8 @@ function GamePage() {
             <Divider />
 
             {players.map((player) => {
-              const isJournalist = player.id === journalist;
-              const isImpostor = player.id === impostor;
+              const isJournalist = journalists.includes(player.id);
+              const isImpostor = impostors.includes(player.id);
               
               return (
                 <Paper key={player.id} p="md" withBorder>
@@ -139,19 +139,21 @@ function GamePage() {
                   Ogni giocatore descrive la propria parola senza dirla direttamente.
                 </Text>
                 <Text size="sm">
-                  <strong>2. Individuate l'impostore</strong>
+                  <strong>2. Individuate {impostors.length > 1 ? 'gli impostori' : "l'impostore"}</strong>
                   <br />
-                  I Discepoli hanno la stessa parola, l'Impostore ne ha una diversa ma simile.
+                  I Discepoli hanno la stessa parola, {impostors.length > 1 ? 'gli Impostori hanno' : "l'Impostore ha"} una parola diversa ma simile.
                 </Text>
+                {journalists.length > 0 && (
+                  <Text size="sm">
+                    <strong>3. {journalists.length > 1 ? 'I Giornalisti conducono' : 'Il Giornalista conduce'}</strong>
+                    <br />
+                    {journalists.length > 1 ? 'I Giornalisti (che conoscono il loro ruolo) devono scoprire chi sono gli Impostori' : "Il Giornalista (che conosce il suo ruolo) deve scoprire chi è l'Impostore"}.
+                  </Text>
+                )}
                 <Text size="sm">
-                  <strong>3. Il Giornalista conduce</strong>
+                  <strong>{journalists.length > 0 ? '4' : '3'}. Votate</strong>
                   <br />
-                  Il Giornalista (che conosce il suo ruolo) deve scoprire chi è l'Impostore.
-                </Text>
-                <Text size="sm">
-                  <strong>4. Votate</strong>
-                  <br />
-                  Alla fine, votate per chi pensate sia l'Impostore!
+                  Alla fine, votate per chi pensate {impostors.length > 1 ? 'siano gli Impostori' : "sia l'Impostore"}!
                 </Text>
               </Stack>
             </Accordion.Panel>
@@ -190,23 +192,29 @@ function GamePage() {
         centered
       >
         <Stack gap="md">
-          <Alert color="green" variant="light">
-            <Text fw={600} size="sm" mb="xs">
-              🔍 Giornalista
-            </Text>
-            <Text size="lg" fw={700}>
-              {journalistPlayer?.name}
-            </Text>
-          </Alert>
+          {journalists.length > 0 && (
+            <Alert color="green" variant="light">
+              <Text fw={600} size="sm" mb="xs">
+                🔍 {journalists.length > 1 ? 'Giornalisti' : 'Giornalista'}
+              </Text>
+              {journalistPlayers.map(p => (
+                <Text key={p.id} size="lg" fw={700}>
+                  {journalists.length > 1 ? '• ' : ''}{p.name}
+                </Text>
+              ))}
+            </Alert>
+          )}
 
           <Alert color="orange" variant="light">
             <Text fw={600} size="sm" mb="xs">
-              🎭 Impostore
+              🎭 {impostors.length > 1 ? 'Impostori' : 'Impostore'}
             </Text>
-            <Text size="lg" fw={700} mb="xs">
-              {impostorPlayer?.name}
-            </Text>
-            <Text size="sm" c="dimmed">
+            {impostorPlayers.map(p => (
+              <Text key={p.id} size="lg" fw={700}>
+                {impostors.length > 1 ? '• ' : ''}{p.name}
+              </Text>
+            ))}
+            <Text size="sm" c="dimmed" mt="xs">
               Parola: <strong>{selectedPair.impostor}</strong>
             </Text>
           </Alert>

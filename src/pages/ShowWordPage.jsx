@@ -17,8 +17,8 @@ import { IconEye, IconEyeOff, IconArrowRight } from '@tabler/icons-react';
 import {
   selectCurrentPlayer,
   selectSelectedPair,
-  selectJournalist,
-  selectImpostor,
+  selectJournalists,
+  selectImpostors,
   selectCurrentPlayerIndex,
   selectPlayers,
   nextPlayer,
@@ -29,8 +29,8 @@ function ShowWordPage() {
   const dispatch = useDispatch();
   const currentPlayer = useSelector(selectCurrentPlayer);
   const selectedPair = useSelector(selectSelectedPair);
-  const journalist = useSelector(selectJournalist);
-  const impostor = useSelector(selectImpostor);
+  const journalists = useSelector(selectJournalists);
+  const impostors = useSelector(selectImpostors);
   const currentPlayerIndex = useSelector(selectCurrentPlayerIndex);
   const players = useSelector(selectPlayers);
   
@@ -41,8 +41,8 @@ function ShowWordPage() {
     return null;
   }
 
-  const isJournalist = currentPlayer.id === journalist;
-  const isImpostor = currentPlayer.id === impostor;
+  const isJournalist = journalists.includes(currentPlayer.id);
+  const isImpostor = impostors.includes(currentPlayer.id);
   
   let displayWord = '';
   let role = 'Discepolo';
@@ -145,7 +145,7 @@ function ShowWordPage() {
             {isJournalist && wordVisible && (
               <Alert color="yellow" variant="filled" style={{ width: '100%' }}>
                 <Text size="sm" ta="center" fw={500}>
-                  Sei il Giornalista! Il tuo compito è scoprire chi è l'Impostore.
+                  Sei {journalists.length > 1 ? 'un' : 'il'} Giornalista! Il tuo compito è scoprire {impostors.length > 1 ? 'chi sono gli Impostori' : "chi è l'Impostore"}.
                 </Text>
               </Alert>
             )}
