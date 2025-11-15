@@ -42,6 +42,7 @@ function GamePage() {
 
   const [showSolution, setShowSolution] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   if (!selectedPair) {
     navigate("/");
@@ -55,6 +56,36 @@ function GamePage() {
   const handleReset = () => {
     dispatch(resetGame());
     navigate("/");
+  };
+
+  const getPlayerInfo = (player) => {
+    const isJournalist = journalists.includes(player.id);
+    const isImpostor = impostors.includes(player.id);
+
+    if (isJournalist) {
+      return {
+        role: journalists.length > 1 ? "Giornalista" : "Il Giornalista",
+        word: "🔍 GIORNALISTA",
+        color: "green",
+        description:
+          "Il tuo compito è scoprire " +
+          (impostors.length > 1 ? "chi sono gli Impostori" : "chi è l'Impostore"),
+      };
+    } else if (isImpostor) {
+      return {
+        role: impostors.length > 1 ? "Impostore" : "L'Impostore",
+        word: selectedPair.impostor,
+        color: "orange",
+        description: "Hai una parola diversa dagli altri",
+      };
+    } else {
+      return {
+        role: "Discepolo",
+        word: selectedPair.disciple,
+        color: "blue",
+        description: "Hai la stessa parola degli altri Discepoli",
+      };
+    }
   };
 
   return (
@@ -98,14 +129,26 @@ function GamePage() {
             <Divider />
 
             {players.map((player) => {
-              const isJournalist = journalists.includes(player.id);
-              const isImpostor = impostors.includes(player.id);
-
               return (
-                <Paper key={player.id} p="md" withBorder>
+                <Paper
+                  key={player.id}
+                  p="md"
+                  withBorder
+                  style={{ cursor: "pointer", transition: "all 0.2s" }}
+                  onClick={() => setSelectedPlayer(player)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#f8f9fa";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                >
                   <Group justify="space-between">
                     <Text fw={500} size="md">
                       {player.name}
+                    </Text>
+                    <Text size="xs" c="dimmed">
+                      Clicca per vedere
                     </Text>
                   </Group>
                 </Paper>
@@ -250,6 +293,70 @@ function GamePage() {
             Chiudi
           </Button>
         </Stack>
+      </Modal>
+
+      {/* Modal Giocatore Selezionato */}
+      <Modal
+        opened={selectedPlayer !== null}
+        onClose={() => setSelectedPlayer(null)}
+        title={
+          <Text fw={700} size="lg">
+            {selectedPlayer?.name}
+          </Text>
+        }
+        size="md"
+        centered
+      >
+        {selectedPlayer && (
+          <Stack gap="lg">
+            <Alert color={getPlayerInfo(selectedPlayer).color} variant="light">
+              <Text fw={600} size="sm" mb="xs">
+                Ruolo: {getPlayerInfo(selectedPlayer).role}
+              </Text>
+              <Paper
+                p="xl"
+                radius="md"
+                style={{
+                  backgroundColor: "white",
+                  border: `2px solid var(--mantine-color-${
+                    getPlayerInfo(selectedPlayer).color
+                  }-3)`,
+                }}
+              >
+                <Title
+                  order={2}
+                  ta="center"
+                  style={{
+                    fontSize: journalists.includes(selectedPlayer.id)
+                      ? "1.5rem"
+                      : "2.5rem",
+                    color:
+                      getPlayerInfo(selectedPlayer).color === "green"
+                        ? "#37b24d"
+                        : getPlayerInfo(selectedPlayer).color === "orange"
+                        ? "#fd7e14"
+                        : "#4c6ef5",
+                  }}
+                >
+                  {getPlayerInfo(selectedPlayer).word}
+                </Title>
+              </Paper>
+              <Text size="sm" mt="md" ta="center" c="dimmed">
+                {getPlayerInfo(selectedPlayer).description}
+              </Text>
+            </Alert>
+
+            <Alert icon={<IconEyeOff size={18} />} color="red" variant="light">
+              <Text size="sm" ta="center">
+                Non far vedere questa schermata agli altri giocatori!
+              </Text>
+            </Alert>
+
+            <Button fullWidth onClick={() => setSelectedPlayer(null)}>
+              Chiudi
+            </Button>
+          </Stack>
+        )}
       </Modal>
 
       {/* Modal Reset */}
