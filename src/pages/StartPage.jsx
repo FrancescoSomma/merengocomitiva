@@ -80,7 +80,7 @@ function StartPage() {
         title={
           <Group gap="xs">
             <IconBook size={24} />
-            <Text fw={700} size="lg">
+            <Text fw={700} size="lg" c="dark">
               Parole Disponibili ({wordsData.length})
             </Text>
           </Group>
