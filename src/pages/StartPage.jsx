@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -7,11 +8,19 @@ import {
   Stack,
   Paper,
   Center,
+  Modal,
+  SimpleGrid,
+  Badge,
+  Group,
+  Divider,
+  ScrollArea,
 } from "@mantine/core";
-import { IconSparkles } from "@tabler/icons-react";
+import { IconSparkles, IconBook } from "@tabler/icons-react";
+import wordsData from "../data/words.json";
 
 function StartPage() {
   const navigate = useNavigate();
+  const [showWords, setShowWords] = useState(false);
 
   return (
     <Center style={{ minHeight: "100vh", padding: "1rem" }}>
@@ -48,10 +57,77 @@ function StartPage() {
               >
                 Inizia Partita
               </Button>
+
+              <Button
+                size="md"
+                variant="light"
+                color="violet"
+                fullWidth
+                leftSection={<IconBook size={18} />}
+                onClick={() => setShowWords(true)}
+              >
+                Visualizza Parole Disponibili
+              </Button>
             </Stack>
           </Stack>
         </Paper>
       </Container>
+
+      {/* Modal Lista Parole */}
+      <Modal
+        opened={showWords}
+        onClose={() => setShowWords(false)}
+        title={
+          <Group gap="xs">
+            <IconBook size={24} />
+            <Text fw={700} size="lg">
+              Parole Disponibili ({wordsData.length})
+            </Text>
+          </Group>
+        }
+        size="lg"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm" c="dimmed" ta="center">
+            Ecco tutte le coppie di parole con cui puoi giocare. I Discepoli
+            ricevono la parola a sinistra, gli Impostori quella a destra.
+          </Text>
+
+          <Divider />
+
+          <ScrollArea h={500}>
+            <Stack gap="xs">
+              {wordsData.map((pair, index) => (
+                <Paper key={index} p="sm" withBorder>
+                  <SimpleGrid cols={2} spacing="md">
+                    <Group gap="xs">
+                      <Badge color="blue" variant="light" size="sm">
+                        Discepolo
+                      </Badge>
+                      <Text fw={600} size="sm">
+                        {pair.disciple}
+                      </Text>
+                    </Group>
+                    <Group gap="xs">
+                      <Badge color="orange" variant="light" size="sm">
+                        Impostore
+                      </Badge>
+                      <Text fw={600} size="sm">
+                        {pair.impostor}
+                      </Text>
+                    </Group>
+                  </SimpleGrid>
+                </Paper>
+              ))}
+            </Stack>
+          </ScrollArea>
+
+          <Button fullWidth onClick={() => setShowWords(false)} mt="md">
+            Chiudi
+          </Button>
+        </Stack>
+      </Modal>
     </Center>
   );
 }
