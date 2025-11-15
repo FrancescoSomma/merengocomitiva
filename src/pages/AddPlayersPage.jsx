@@ -14,13 +14,14 @@ import {
   Alert,
   Badge,
 } from '@mantine/core';
-import { IconUserPlus, IconTrash, IconAlertCircle, IconArrowLeft } from '@tabler/icons-react';
-import { addPlayer, removePlayer, selectPlayers, startGame } from '../store/gameSlice';
+import { IconUserPlus, IconTrash, IconAlertCircle, IconArrowLeft, IconWand } from '@tabler/icons-react';
+import { addPlayer, removePlayer, selectPlayers, selectCustomWords, startGame } from '../store/gameSlice';
 
 function AddPlayersPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const players = useSelector(selectPlayers);
+  const customWords = useSelector(selectCustomWords);
   const [newPlayerName, setNewPlayerName] = useState('');
 
   const handleAddPlayer = () => {
@@ -62,6 +63,17 @@ function AddPlayersPage() {
             </Text>
           </div>
         </Group>
+
+        {customWords && (
+          <Alert icon={<IconWand size={18} />} color="violet" variant="light">
+            <Text size="sm" fw={500}>
+              Partita Custom
+            </Text>
+            <Text size="xs" c="dimmed" mt="xs">
+              Discepoli: <strong>{customWords.disciple}</strong> • Impostori: <strong>{customWords.impostor}</strong>
+            </Text>
+          </Alert>
+        )}
 
         <Paper shadow="sm" p="md" radius="md">
           <Stack gap="md">

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   Container,
   Title,
@@ -14,13 +15,26 @@ import {
   Group,
   Divider,
   ScrollArea,
+  TextInput,
+  Alert,
 } from "@mantine/core";
-import { IconSparkles, IconBook } from "@tabler/icons-react";
+import {
+  IconSparkles,
+  IconBook,
+  IconWand,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 import wordsData from "../data/words.json";
+import { setCustomWords } from "../store/gameSlice";
 
 function StartPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showWords, setShowWords] = useState(false);
+  const [showCustomModal, setShowCustomModal] = useState(false);
+  const [discipleWord, setDiscipleWord] = useState("");
+  const [impostorWord, setImpostorWord] = useState("");
+  const [error, setError] = useState("");
 
   return (
     <Center style={{ minHeight: "100vh", padding: "1rem" }}>
@@ -63,6 +77,17 @@ function StartPage() {
                 variant="light"
                 color="white"
                 fullWidth
+                leftSection={<IconWand size={18} />}
+                onClick={() => setShowCustomModal(true)}
+              >
+                Partita Custom
+              </Button>
+
+              <Button
+                size="md"
+                variant="light"
+                color="white"
+                fullWidth
                 leftSection={<IconBook size={18} />}
                 onClick={() => setShowWords(true)}
               >
@@ -72,6 +97,96 @@ function StartPage() {
           </Stack>
         </Paper>
       </Container>
+
+      {/* Modal Partita Custom */}
+      <Modal
+        opened={showCustomModal}
+        onClose={() => {
+          setShowCustomModal(false);
+          setDiscipleWord("");
+          setImpostorWord("");
+          setError("");
+        }}
+        title={
+          <Group gap="xs">
+            <IconWand size={24} />
+            <Text fw={700} size="lg">
+              Crea Partita Custom
+            </Text>
+          </Group>
+        }
+        size="md"
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm" c="dimmed" ta="center">
+            Scegli le due parole che verranno usate nella partita
+          </Text>
+
+          {error && (
+            <Alert
+              icon={<IconAlertCircle size={18} />}
+              color="red"
+              variant="light"
+            >
+              {error}
+            </Alert>
+          )}
+
+          <TextInput
+            label="Parola Discepoli"
+            placeholder="Es: CANE"
+            value={discipleWord}
+            onChange={(e) => setDiscipleWord(e.target.value.toUpperCase())}
+            size="md"
+            required
+          />
+
+          <TextInput
+            label="Parola Impostori"
+            placeholder="Es: GATTO"
+            value={impostorWord}
+            onChange={(e) => setImpostorWord(e.target.value.toUpperCase())}
+            size="md"
+            required
+          />
+
+          <Alert color="blue" variant="light">
+            <Text size="xs">
+              💡 Le parole devono essere simili ma diverse per rendere il gioco
+              interessante!
+            </Text>
+          </Alert>
+
+          <Button
+            fullWidth
+            size="md"
+            onClick={() => {
+              if (!discipleWord.trim() || !impostorWord.trim()) {
+                setError("Entrambe le parole sono obbligatorie!");
+                return;
+              }
+              if (discipleWord.trim() === impostorWord.trim()) {
+                setError("Le due parole devono essere diverse!");
+                return;
+              }
+              dispatch(
+                setCustomWords({
+                  disciple: discipleWord.trim(),
+                  impostor: impostorWord.trim(),
+                })
+              );
+              setShowCustomModal(false);
+              setDiscipleWord("");
+              setImpostorWord("");
+              setError("");
+              navigate("/add-players");
+            }}
+          >
+            Continua con questi Parole
+          </Button>
+        </Stack>
+      </Modal>
 
       {/* Modal Lista Parole */}
       <Modal

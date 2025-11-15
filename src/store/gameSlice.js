@@ -14,6 +14,7 @@ const initialState = {
   players: [],
   words: wordsData,
   selectedPair: null,
+  customWords: null, // { disciple: string, impostor: string } per partita custom
   gameStep: "start", // 'start' | 'add-players' | 'show-word' | 'playing'
   currentPlayerIndex: 0,
   journalists: [],
@@ -22,6 +23,7 @@ const initialState = {
   revealedPlayers: [],
   usedWordIndices: [], // Traccia le parole già usate nella sessione
   playerPowers: {}, // { playerId: power }
+  eliminatedPlayers: [], // Array di playerId eliminati
 };
 
 export const gameSlice = createSlice({
@@ -38,28 +40,33 @@ export const gameSlice = createSlice({
       state.players = state.players.filter((p) => p.id !== action.payload);
     },
     startGame: (state) => {
-      // Seleziona una coppia di parole casuale non ancora usata
-      const availableIndices = state.words
-        .map((_, index) => index)
-        .filter((index) => !state.usedWordIndices.includes(index));
+      // Se ci sono parole custom, usale invece di quelle random
+      if (state.customWords) {
+        state.selectedPair = state.customWords;
+      } else {
+        // Seleziona una coppia di parole casuale non ancora usata
+        const availableIndices = state.words
+          .map((_, index) => index)
+          .filter((index) => !state.usedWordIndices.includes(index));
 
-      if (availableIndices.length === 0) {
-        // Se tutte le parole sono state usate, resetta la lista
-        state.usedWordIndices = [];
+        if (availableIndices.length === 0) {
+          // Se tutte le parole sono state usate, resetta la lista
+          state.usedWordIndices = [];
+        }
+
+        const finalAvailableIndices =
+          state.usedWordIndices.length === 0
+            ? state.words.map((_, index) => index)
+            : availableIndices;
+
+        const randomIndex =
+          finalAvailableIndices[
+            Math.floor(Math.random() * finalAvailableIndices.length)
+          ];
+
+        state.selectedPair = state.words[randomIndex];
+        state.usedWordIndices.push(randomIndex);
       }
-
-      const finalAvailableIndices =
-        state.usedWordIndices.length === 0
-          ? state.words.map((_, index) => index)
-          : availableIndices;
-
-      const randomIndex =
-        finalAvailableIndices[
-          Math.floor(Math.random() * finalAvailableIndices.length)
-        ];
-
-      state.selectedPair = state.words[randomIndex];
-      state.usedWordIndices.push(randomIndex);
 
       // Assegna i ruoli in base al numero di giocatori
       const playerCount = state.players.length;
@@ -145,6 +152,7 @@ export const gameSlice = createSlice({
     },
     resetGame: (state) => {
       state.selectedPair = null;
+      state.customWords = null; // Resetta le parole custom
       state.gameStep = "start";
       state.currentPlayerIndex = 0;
       state.journalists = [];
@@ -154,9 +162,28 @@ export const gameSlice = createSlice({
       state.players = [];
       state.usedWordIndices = []; // Resetta anche le parole usate
       state.playerPowers = {}; // Resetta i poteri
+      state.eliminatedPlayers = []; // Resetta i giocatori eliminati
     },
     setGameStep: (state, action) => {
       state.gameStep = action.payload;
+    },
+    eliminatePlayer: (state, action) => {
+      const playerId = action.payload;
+      if (!state.eliminatedPlayers.includes(playerId)) {
+        state.eliminatedPlayers.push(playerId);
+      }
+    },
+    restorePlayer: (state, action) => {
+      const playerId = action.payload;
+      state.eliminatedPlayers = state.eliminatedPlayers.filter(
+        (id) => id !== playerId
+      );
+    },
+    setCustomWords: (state, action) => {
+      state.customWords = action.payload;
+    },
+    clearCustomWords: (state) => {
+      state.customWords = null;
     },
   },
 });
@@ -169,6 +196,10 @@ export const {
   nextPlayer,
   resetGame,
   setGameStep,
+  eliminatePlayer,
+  restorePlayer,
+  setCustomWords,
+  clearCustomWords,
 } = gameSlice.actions;
 
 // Selectors
@@ -185,5 +216,7 @@ export const selectCurrentPlayerIndex = (state) =>
 export const selectRevealedPlayers = (state) => state.game.revealedPlayers;
 export const selectUsedWordIndices = (state) => state.game.usedWordIndices;
 export const selectPlayerPowers = (state) => state.game.playerPowers;
+export const selectEliminatedPlayers = (state) => state.game.eliminatedPlayers;
+export const selectCustomWords = (state) => state.game.customWords;
 
 export default gameSlice.reducer;

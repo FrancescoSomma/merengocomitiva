@@ -30,7 +30,10 @@ import {
   selectImpostors,
   selectDisciples,
   selectPlayerPowers,
+  selectEliminatedPlayers,
   resetGame,
+  eliminatePlayer,
+  restorePlayer,
 } from "../store/gameSlice";
 
 function GamePage() {
@@ -42,12 +45,21 @@ function GamePage() {
   const impostors = useSelector(selectImpostors);
   const disciples = useSelector(selectDisciples);
   const playerPowers = useSelector(selectPlayerPowers);
+  const eliminatedPlayers = useSelector(selectEliminatedPlayers);
 
   const [showSolution, setShowSolution] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const hasPowers = Object.keys(playerPowers).length > 0;
+
+  const handleEliminatePlayer = (playerId) => {
+    dispatch(eliminatePlayer(playerId));
+  };
+
+  const handleRestorePlayer = (playerId) => {
+    dispatch(restorePlayer(playerId));
+  };
 
   if (!selectedPair) {
     navigate("/");
@@ -131,39 +143,79 @@ function GamePage() {
 
             {players.map((player) => {
               const playerPower = playerPowers[player.id];
+              const isEliminated = eliminatedPlayers.includes(player.id);
               return (
                 <Paper
                   key={player.id}
                   p="md"
                   withBorder
-                  style={{ cursor: "pointer", transition: "all 0.2s" }}
-                  onClick={() => setSelectedPlayer(player)}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#f8f9fa";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
+                  style={{
+                    transition: "all 0.2s",
+                    backgroundColor: isEliminated ? "#ffe0e0" : "white",
+                    opacity: isEliminated ? 0.7 : 1,
                   }}
                 >
                   <Stack gap="xs">
-                    <Group justify="space-between">
-                      <Text fw={500} size="md">
-                        {player.name}
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        Clicca per vedere
-                      </Text>
-                    </Group>
-                    {hasPowers && playerPower && (
+                    <Group justify="space-between" align="flex-start">
+                      <Stack gap="xs" style={{ flex: 1 }}>
+                        <Group gap="xs">
+                          <Text
+                            fw={500}
+                            size="md"
+                            style={{
+                              textDecoration: isEliminated
+                                ? "line-through"
+                                : "none",
+                            }}
+                          >
+                            {player.name}
+                          </Text>
+                          {isEliminated && (
+                            <Badge color="red" variant="filled" size="sm">
+                              Eliminato
+                            </Badge>
+                          )}
+                        </Group>
+                        {hasPowers && playerPower && (
+                          <Group gap="xs">
+                            <Badge color="grape" variant="light" size="sm">
+                              🎯 Potere
+                            </Badge>
+                            <Text size="xs" c="dimmed">
+                              {playerPower}
+                            </Text>
+                          </Group>
+                        )}
+                      </Stack>
                       <Group gap="xs">
-                        <Badge color="grape" variant="light" size="sm">
-                          🎯 Potere
-                        </Badge>
-                        <Text size="xs" c="dimmed">
-                          {playerPower}
-                        </Text>
+                        <Button
+                          size="xs"
+                          variant="light"
+                          onClick={() => setSelectedPlayer(player)}
+                        >
+                          👁️ Vedi
+                        </Button>
+                        {!isEliminated ? (
+                          <Button
+                            size="xs"
+                            color="red"
+                            variant="light"
+                            onClick={() => handleEliminatePlayer(player.id)}
+                          >
+                            ❌ Elimina
+                          </Button>
+                        ) : (
+                          <Button
+                            size="xs"
+                            color="green"
+                            variant="light"
+                            onClick={() => handleRestorePlayer(player.id)}
+                          >
+                            ↩️ Ripristina
+                          </Button>
+                        )}
                       </Group>
-                    )}
+                    </Group>
                   </Stack>
                 </Paper>
               );
