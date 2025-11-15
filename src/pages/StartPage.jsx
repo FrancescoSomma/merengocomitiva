@@ -61,7 +61,7 @@ function StartPage() {
               <Button
                 size="md"
                 variant="light"
-                color="violet"
+                color="white"
                 fullWidth
                 leftSection={<IconBook size={18} />}
                 onClick={() => setShowWords(true)}
@@ -79,8 +79,8 @@ function StartPage() {
         onClose={() => setShowWords(false)}
         title={
           <Group gap="xs">
-            <IconBook size={24} />
-            <Text fw={700} size="lg" c="dark">
+            <IconBook size={24} style={{ color: "#fff" }} />
+            <Text fw={700} size="lg" style={{ color: "#fff" }}>
               Parole Disponibili ({wordsData.length})
             </Text>
           </Group>
