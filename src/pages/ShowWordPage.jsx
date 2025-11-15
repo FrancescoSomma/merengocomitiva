@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Container,
   Title,
@@ -12,8 +12,8 @@ import {
   Group,
   Badge,
   Alert,
-} from '@mantine/core';
-import { IconEye, IconEyeOff, IconArrowRight } from '@tabler/icons-react';
+} from "@mantine/core";
+import { IconEye, IconEyeOff, IconArrowRight } from "@tabler/icons-react";
 import {
   selectCurrentPlayer,
   selectSelectedPair,
@@ -22,7 +22,7 @@ import {
   selectCurrentPlayerIndex,
   selectPlayers,
   nextPlayer,
-} from '../store/gameSlice';
+} from "../store/gameSlice";
 
 function ShowWordPage() {
   const navigate = useNavigate();
@@ -33,48 +33,42 @@ function ShowWordPage() {
   const impostors = useSelector(selectImpostors);
   const currentPlayerIndex = useSelector(selectCurrentPlayerIndex);
   const players = useSelector(selectPlayers);
-  
+
   const [wordVisible, setWordVisible] = useState(false);
 
   if (!currentPlayer || !selectedPair) {
-    navigate('/');
+    navigate("/");
     return null;
   }
 
   const isJournalist = journalists.includes(currentPlayer.id);
   const isImpostor = impostors.includes(currentPlayer.id);
-  
-  let displayWord = '';
-  let role = 'Discepolo';
-  let roleColor = 'blue';
+
+  let displayWord = "";
+  let role = "Discepolo";
+  let roleColor = "blue";
 
   if (isJournalist) {
-    displayWord = '🔍 GIORNALISTA';
-    role = 'Giornalista';
-    roleColor = 'green';
+    displayWord = "🔍 GIORNALISTA";
   } else if (isImpostor) {
     displayWord = selectedPair.impostor;
-    role = 'Ruolo Segreto';
-    roleColor = 'orange';
   } else {
     displayWord = selectedPair.disciple;
-    role = 'Ruolo Segreto';
-    roleColor = 'blue';
   }
 
   const handleNext = () => {
     setWordVisible(false);
     dispatch(nextPlayer());
-    
+
     if (currentPlayerIndex >= players.length - 1) {
-      navigate('/game');
+      navigate("/game");
     }
   };
 
   return (
-    <Container size="sm" py="xl" style={{ minHeight: '100vh' }}>
+    <Container size="sm" py="xl" style={{ minHeight: "100vh" }}>
       <Stack gap="xl" align="center">
-        <Paper p="md" withBorder style={{ width: '100%' }}>
+        <Paper p="md" withBorder style={{ width: "100%" }}>
           <Group justify="space-between">
             <Text size="sm" c="dimmed">
               Giocatore {currentPlayerIndex + 1} di {players.length}
@@ -90,22 +84,18 @@ function ShowWordPage() {
           p="xl"
           radius="lg"
           style={{
-            width: '100%',
-            minHeight: '300px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            width: "100%",
+            minHeight: "300px",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           }}
         >
           <Stack align="center" gap="xl">
-            <Badge size="xl" variant="filled" color={roleColor}>
-              {role}
-            </Badge>
-            
-            <Title order={1} c="white" ta="center" style={{ fontSize: '2rem' }}>
+            <Title order={1} c="white" ta="center" style={{ fontSize: "2rem" }}>
               {currentPlayer.name}
             </Title>
 
             {!wordVisible ? (
-              <Center style={{ minHeight: '120px', width: '100%' }}>
+              <Center style={{ minHeight: "120px", width: "100%" }}>
                 <Button
                   size="xl"
                   variant="white"
@@ -121,20 +111,20 @@ function ShowWordPage() {
                 p="xl"
                 radius="md"
                 style={{
-                  width: '100%',
-                  backgroundColor: 'white',
-                  minHeight: '120px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  width: "100%",
+                  backgroundColor: "white",
+                  minHeight: "120px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <Title
                   order={2}
                   ta="center"
                   style={{
-                    fontSize: isJournalist ? '1.5rem' : '2.5rem',
-                    color: '#667eea',
+                    fontSize: isJournalist ? "1.5rem" : "2.5rem",
+                    color: "#667eea",
                   }}
                 >
                   {displayWord}
@@ -143,9 +133,14 @@ function ShowWordPage() {
             )}
 
             {isJournalist && wordVisible && (
-              <Alert color="yellow" variant="filled" style={{ width: '100%' }}>
+              <Alert color="yellow" variant="filled" style={{ width: "100%" }}>
                 <Text size="sm" ta="center" fw={500}>
-                  Sei {journalists.length > 1 ? 'un' : 'il'} Giornalista! Il tuo compito è scoprire {impostors.length > 1 ? 'chi sono gli Impostori' : "chi è l'Impostore"}.
+                  Sei {journalists.length > 1 ? "un" : "il"} Giornalista! Il tuo
+                  compito è scoprire{" "}
+                  {impostors.length > 1
+                    ? "chi sono gli Impostori"
+                    : "chi è l'Impostore"}
+                  .
                 </Text>
               </Alert>
             )}
@@ -153,11 +148,11 @@ function ShowWordPage() {
         </Paper>
 
         {wordVisible && (
-          <Stack gap="md" style={{ width: '100%' }}>
+          <Stack gap="md" style={{ width: "100%" }}>
             <Alert icon={<IconEyeOff size={18} />} color="red" variant="light">
               Memorizza la tua parola e non farla vedere agli altri!
             </Alert>
-            
+
             <Button
               size="lg"
               fullWidth
@@ -165,8 +160,8 @@ function ShowWordPage() {
               onClick={handleNext}
             >
               {currentPlayerIndex < players.length - 1
-                ? 'Giocatore Successivo'
-                : 'Inizia la Partita'}
+                ? "Giocatore Successivo"
+                : "Inizia la Partita"}
             </Button>
           </Stack>
         )}
@@ -176,4 +171,3 @@ function ShowWordPage() {
 }
 
 export default ShowWordPage;
-

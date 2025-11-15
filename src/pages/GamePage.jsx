@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Container,
   Title,
@@ -14,14 +14,14 @@ import {
   Modal,
   Alert,
   Divider,
-} from '@mantine/core';
+} from "@mantine/core";
 import {
   IconTrophy,
   IconEye,
   IconRefresh,
   IconSparkles,
   IconUsers,
-} from '@tabler/icons-react';
+} from "@tabler/icons-react";
 import {
   selectPlayers,
   selectSelectedPair,
@@ -29,7 +29,7 @@ import {
   selectImpostors,
   selectDisciples,
   resetGame,
-} from '../store/gameSlice';
+} from "../store/gameSlice";
 
 function GamePage() {
   const navigate = useNavigate();
@@ -39,34 +39,34 @@ function GamePage() {
   const journalists = useSelector(selectJournalists);
   const impostors = useSelector(selectImpostors);
   const disciples = useSelector(selectDisciples);
-  
+
   const [showSolution, setShowSolution] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
 
   if (!selectedPair) {
-    navigate('/');
+    navigate("/");
     return null;
   }
 
-  const journalistPlayers = players.filter(p => journalists.includes(p.id));
-  const impostorPlayers = players.filter(p => impostors.includes(p.id));
-  const disciplePlayers = players.filter(p => disciples.includes(p.id));
+  const journalistPlayers = players.filter((p) => journalists.includes(p.id));
+  const impostorPlayers = players.filter((p) => impostors.includes(p.id));
+  const disciplePlayers = players.filter((p) => disciples.includes(p.id));
 
   const handleReset = () => {
     dispatch(resetGame());
-    navigate('/');
+    navigate("/");
   };
 
   return (
-    <Container size="sm" py="xl" style={{ minHeight: '100vh' }}>
+    <Container size="sm" py="xl" style={{ minHeight: "100vh" }}>
       <Stack gap="lg">
         <Paper
           shadow="md"
           p="xl"
           radius="lg"
           style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            color: "white",
           }}
         >
           <Stack align="center" gap="md">
@@ -75,7 +75,8 @@ function GamePage() {
               Partita in Corso
             </Title>
             <Text size="lg" ta="center">
-              Fate a turno domande e cercate di scoprire {impostors.length > 1 ? 'gli impostori' : "l'impostore"}!
+              Fate a turno domande e cercate di scoprire{" "}
+              {impostors.length > 1 ? "gli impostori" : "l'impostore"}!
             </Text>
           </Stack>
         </Paper>
@@ -99,26 +100,13 @@ function GamePage() {
             {players.map((player) => {
               const isJournalist = journalists.includes(player.id);
               const isImpostor = impostors.includes(player.id);
-              
+
               return (
                 <Paper key={player.id} p="md" withBorder>
                   <Group justify="space-between">
-                    <Text fw={500} size="md">{player.name}</Text>
-                    {isJournalist && (
-                      <Badge color="green" variant="light">
-                        👤
-                      </Badge>
-                    )}
-                    {!isJournalist && !isImpostor && (
-                      <Badge color="blue" variant="light">
-                        👥
-                      </Badge>
-                    )}
-                    {isImpostor && (
-                      <Badge color="orange" variant="light">
-                        ❓
-                      </Badge>
-                    )}
+                    <Text fw={500} size="md">
+                      {player.name}
+                    </Text>
                   </Group>
                 </Paper>
               );
@@ -136,24 +124,43 @@ function GamePage() {
                 <Text size="sm">
                   <strong>1. Fate domande a turno</strong>
                   <br />
-                  Ogni giocatore descrive la propria parola senza dirla direttamente.
+                  Ogni giocatore descrive la propria parola senza dirla
+                  direttamente.
                 </Text>
                 <Text size="sm">
-                  <strong>2. Individuate {impostors.length > 1 ? 'gli impostori' : "l'impostore"}</strong>
-                  <br />
-                  I Discepoli hanno la stessa parola, {impostors.length > 1 ? 'gli Impostori hanno' : "l'Impostore ha"} una parola diversa ma simile.
+                  <strong>
+                    2. Individuate{" "}
+                    {impostors.length > 1 ? "gli impostori" : "l'impostore"}
+                  </strong>
+                  <br />I Discepoli hanno la stessa parola,{" "}
+                  {impostors.length > 1
+                    ? "gli Impostori hanno"
+                    : "l'Impostore ha"}{" "}
+                  una parola diversa ma simile.
                 </Text>
                 {journalists.length > 0 && (
                   <Text size="sm">
-                    <strong>3. {journalists.length > 1 ? 'I Giornalisti conducono' : 'Il Giornalista conduce'}</strong>
+                    <strong>
+                      3.{" "}
+                      {journalists.length > 1
+                        ? "I Giornalisti conducono"
+                        : "Il Giornalista conduce"}
+                    </strong>
                     <br />
-                    {journalists.length > 1 ? 'I Giornalisti (che conoscono il loro ruolo) devono scoprire chi sono gli Impostori' : "Il Giornalista (che conosce il suo ruolo) deve scoprire chi è l'Impostore"}.
+                    {journalists.length > 1
+                      ? "I Giornalisti (che conoscono il loro ruolo) devono scoprire chi sono gli Impostori"
+                      : "Il Giornalista (che conosce il suo ruolo) deve scoprire chi è l'Impostore"}
+                    .
                   </Text>
                 )}
                 <Text size="sm">
-                  <strong>{journalists.length > 0 ? '4' : '3'}. Votate</strong>
+                  <strong>{journalists.length > 0 ? "4" : "3"}. Votate</strong>
                   <br />
-                  Alla fine, votate per chi pensate {impostors.length > 1 ? 'siano gli Impostori' : "sia l'Impostore"}!
+                  Alla fine, votate per chi pensate{" "}
+                  {impostors.length > 1
+                    ? "siano gli Impostori"
+                    : "sia l'Impostore"}
+                  !
                 </Text>
               </Stack>
             </Accordion.Panel>
@@ -187,7 +194,11 @@ function GamePage() {
       <Modal
         opened={showSolution}
         onClose={() => setShowSolution(false)}
-        title={<Text fw={700} size="lg">🎯 Soluzione</Text>}
+        title={
+          <Text fw={700} size="lg">
+            🎯 Soluzione
+          </Text>
+        }
         size="md"
         centered
       >
@@ -195,11 +206,12 @@ function GamePage() {
           {journalists.length > 0 && (
             <Alert color="green" variant="light">
               <Text fw={600} size="sm" mb="xs">
-                🔍 {journalists.length > 1 ? 'Giornalisti' : 'Giornalista'}
+                🔍 {journalists.length > 1 ? "Giornalisti" : "Giornalista"}
               </Text>
-              {journalistPlayers.map(p => (
+              {journalistPlayers.map((p) => (
                 <Text key={p.id} size="lg" fw={700}>
-                  {journalists.length > 1 ? '• ' : ''}{p.name}
+                  {journalists.length > 1 ? "• " : ""}
+                  {p.name}
                 </Text>
               ))}
             </Alert>
@@ -207,11 +219,12 @@ function GamePage() {
 
           <Alert color="orange" variant="light">
             <Text fw={600} size="sm" mb="xs">
-              🎭 {impostors.length > 1 ? 'Impostori' : 'Impostore'}
+              🎭 {impostors.length > 1 ? "Impostori" : "Impostore"}
             </Text>
-            {impostorPlayers.map(p => (
+            {impostorPlayers.map((p) => (
               <Text key={p.id} size="lg" fw={700}>
-                {impostors.length > 1 ? '• ' : ''}{p.name}
+                {impostors.length > 1 ? "• " : ""}
+                {p.name}
               </Text>
             ))}
             <Text size="sm" c="dimmed" mt="xs">
@@ -223,7 +236,7 @@ function GamePage() {
             <Text fw={600} size="sm" mb="xs">
               📚 Discepoli
             </Text>
-            {disciplePlayers.map(p => (
+            {disciplePlayers.map((p) => (
               <Text key={p.id} size="md" fw={500}>
                 • {p.name}
               </Text>
@@ -233,11 +246,7 @@ function GamePage() {
             </Text>
           </Alert>
 
-          <Button
-            fullWidth
-            onClick={() => setShowSolution(false)}
-            mt="md"
-          >
+          <Button fullWidth onClick={() => setShowSolution(false)} mt="md">
             Chiudi
           </Button>
         </Stack>
@@ -252,19 +261,14 @@ function GamePage() {
       >
         <Stack gap="md">
           <Text>
-            Sei sicuro di voler iniziare una nuova partita? Tutti i dati attuali verranno persi.
+            Sei sicuro di voler iniziare una nuova partita? Tutti i dati attuali
+            verranno persi.
           </Text>
           <Group grow>
-            <Button
-              variant="light"
-              onClick={() => setShowResetModal(false)}
-            >
+            <Button variant="light" onClick={() => setShowResetModal(false)}>
               Annulla
             </Button>
-            <Button
-              color="red"
-              onClick={handleReset}
-            >
+            <Button color="red" onClick={handleReset}>
               Nuova Partita
             </Button>
           </Group>
@@ -275,4 +279,3 @@ function GamePage() {
 }
 
 export default GamePage;
-
