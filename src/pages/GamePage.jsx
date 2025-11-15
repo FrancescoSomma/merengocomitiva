@@ -171,78 +171,6 @@ function GamePage() {
           </Stack>
         </Paper>
 
-        <Accordion variant="contained">
-          <Accordion.Item value="instructions">
-            <Accordion.Control icon={<IconSparkles size={20} />}>
-              📖 Come si Gioca
-            </Accordion.Control>
-            <Accordion.Panel>
-              <Stack gap="sm">
-                <Text size="sm">
-                  <strong>1. Fate domande a turno</strong>
-                  <br />
-                  Ogni giocatore descrive la propria parola senza dirla
-                  direttamente.
-                </Text>
-                <Text size="sm">
-                  <strong>
-                    2. Individuate{" "}
-                    {impostors.length > 1 ? "gli impostori" : "l'impostore"}
-                  </strong>
-                  <br />I Discepoli hanno la stessa parola,{" "}
-                  {impostors.length > 1
-                    ? "gli Impostori hanno"
-                    : "l'Impostore ha"}{" "}
-                  una parola diversa ma simile.
-                </Text>
-                {journalists.length > 0 && (
-                  <Text size="sm">
-                    <strong>
-                      3.{" "}
-                      {journalists.length > 1
-                        ? "I Giornalisti conducono"
-                        : "Il Giornalista conduce"}
-                    </strong>
-                    <br />
-                    {journalists.length > 1
-                      ? "I Giornalisti (che conoscono il loro ruolo) devono scoprire chi sono gli Impostori"
-                      : "Il Giornalista (che conosce il suo ruolo) deve scoprire chi è l'Impostore"}
-                    .
-                  </Text>
-                )}
-                {hasPowers && (
-                  <Text size="sm">
-                    <strong>
-                      {journalists.length > 0 ? "4" : "3"}. Usate i poteri
-                    </strong>
-                    <br />
-                    Ogni giocatore ha un potere speciale visibile a tutti.
-                    Usatelo strategicamente!
-                  </Text>
-                )}
-                <Text size="sm">
-                  <strong>
-                    {hasPowers
-                      ? journalists.length > 0
-                        ? "5"
-                        : "4"
-                      : journalists.length > 0
-                      ? "4"
-                      : "3"}
-                    . Votate
-                  </strong>
-                  <br />
-                  Alla fine, votate per chi pensate{" "}
-                  {impostors.length > 1
-                    ? "siano gli Impostori"
-                    : "sia l'Impostore"}
-                  !
-                </Text>
-              </Stack>
-            </Accordion.Panel>
-          </Accordion.Item>
-        </Accordion>
-
         <Button
           size="lg"
           variant="light"
@@ -251,7 +179,7 @@ function GamePage() {
           leftSection={<IconEye size={20} />}
           onClick={() => setShowSolution(true)}
         >
-          Mostra Soluzione
+          Mostra Parole
         </Button>
 
         <Button
@@ -266,61 +194,46 @@ function GamePage() {
         </Button>
       </Stack>
 
-      {/* Modal Soluzione */}
+      {/* Modal Parole */}
       <Modal
         opened={showSolution}
         onClose={() => setShowSolution(false)}
         title={
           <Text fw={700} size="lg">
-            🎯 Soluzione
+            📖 Parole della Partita
           </Text>
         }
         size="md"
         centered
       >
         <Stack gap="md">
-          {journalists.length > 0 && (
-            <Alert color="green" variant="light">
-              <Text fw={600} size="sm" mb="xs">
-                🔍 {journalists.length > 1 ? "Giornalisti" : "Giornalista"}
-              </Text>
-              {journalistPlayers.map((p) => (
-                <Text key={p.id} size="lg" fw={700}>
-                  {journalists.length > 1 ? "• " : ""}
-                  {p.name}
+          <Text size="sm" c="dimmed" ta="center">
+            Le due parole utilizzate in questa partita
+          </Text>
+
+          <Paper p="xl" radius="md" withBorder>
+            <Stack gap="lg" align="center">
+              <div style={{ width: "100%" }}>
+                <Text size="xs" c="dimmed" ta="center" mb="xs">
+                  PAROLA DISCEPOLI
                 </Text>
-              ))}
-            </Alert>
-          )}
+                <Title order={2} ta="center" c="blue">
+                  {selectedPair.disciple}
+                </Title>
+              </div>
 
-          <Alert color="orange" variant="light">
-            <Text fw={600} size="sm" mb="xs">
-              🎭 {impostors.length > 1 ? "Impostori" : "Impostore"}
-            </Text>
-            {impostorPlayers.map((p) => (
-              <Text key={p.id} size="lg" fw={700}>
-                {impostors.length > 1 ? "• " : ""}
-                {p.name}
-              </Text>
-            ))}
-            <Text size="sm" c="dimmed" mt="xs">
-              Parola: <strong>{selectedPair.impostor}</strong>
-            </Text>
-          </Alert>
+              <Divider style={{ width: "100%" }} />
 
-          <Alert color="blue" variant="light">
-            <Text fw={600} size="sm" mb="xs">
-              📚 Discepoli
-            </Text>
-            {disciplePlayers.map((p) => (
-              <Text key={p.id} size="md" fw={500}>
-                • {p.name}
-              </Text>
-            ))}
-            <Text size="sm" c="dimmed" mt="xs">
-              Parola: <strong>{selectedPair.disciple}</strong>
-            </Text>
-          </Alert>
+              <div style={{ width: "100%" }}>
+                <Text size="xs" c="dimmed" ta="center" mb="xs">
+                  PAROLA IMPOSTORI
+                </Text>
+                <Title order={2} ta="center" c="orange">
+                  {selectedPair.impostor}
+                </Title>
+              </div>
+            </Stack>
+          </Paper>
 
           <Button fullWidth onClick={() => setShowSolution(false)} mt="md">
             Chiudi
