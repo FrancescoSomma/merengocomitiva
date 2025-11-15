@@ -18,6 +18,7 @@ import {
 import {
   IconTrophy,
   IconEye,
+  IconEyeOff,
   IconRefresh,
   IconSparkles,
   IconUsers,
@@ -64,26 +65,26 @@ function GamePage() {
 
     if (isJournalist) {
       return {
+        showRole: true,
         role: journalists.length > 1 ? "Giornalista" : "Il Giornalista",
         word: "🔍 GIORNALISTA",
-        color: "green",
         description:
           "Il tuo compito è scoprire " +
-          (impostors.length > 1 ? "chi sono gli Impostori" : "chi è l'Impostore"),
+          (impostors.length > 1
+            ? "chi sono gli Impostori"
+            : "chi è l'Impostore"),
       };
     } else if (isImpostor) {
       return {
-        role: impostors.length > 1 ? "Impostore" : "L'Impostore",
+        showRole: false,
         word: selectedPair.impostor,
-        color: "orange",
-        description: "Hai una parola diversa dagli altri",
+        description: "Questa è la tua parola. Non la rivelare agli altri!",
       };
     } else {
       return {
-        role: "Discepolo",
+        showRole: false,
         word: selectedPair.disciple,
-        color: "blue",
-        description: "Hai la stessa parola degli altri Discepoli",
+        description: "Questa è la tua parola. Non la rivelare agli altri!",
       };
     }
   };
@@ -309,42 +310,45 @@ function GamePage() {
       >
         {selectedPlayer && (
           <Stack gap="lg">
-            <Alert color={getPlayerInfo(selectedPlayer).color} variant="light">
-              <Text fw={600} size="sm" mb="xs">
-                Ruolo: {getPlayerInfo(selectedPlayer).role}
-              </Text>
-              <Paper
-                p="xl"
-                radius="md"
+            <Paper
+              p="xl"
+              radius="md"
+              style={{
+                backgroundColor: getPlayerInfo(selectedPlayer).showRole
+                  ? "#d0f4de"
+                  : "#f8f9fa",
+                border: "2px solid #dee2e6",
+              }}
+            >
+              {getPlayerInfo(selectedPlayer).showRole && (
+                <Text
+                  fw={600}
+                  size="sm"
+                  mb="md"
+                  ta="center"
+                  c="green"
+                  style={{ textTransform: "uppercase" }}
+                >
+                  {getPlayerInfo(selectedPlayer).role}
+                </Text>
+              )}
+              <Title
+                order={2}
+                ta="center"
                 style={{
-                  backgroundColor: "white",
-                  border: `2px solid var(--mantine-color-${
-                    getPlayerInfo(selectedPlayer).color
-                  }-3)`,
+                  fontSize: getPlayerInfo(selectedPlayer).showRole
+                    ? "1.5rem"
+                    : "2.5rem",
+                  color: "#667eea",
                 }}
               >
-                <Title
-                  order={2}
-                  ta="center"
-                  style={{
-                    fontSize: journalists.includes(selectedPlayer.id)
-                      ? "1.5rem"
-                      : "2.5rem",
-                    color:
-                      getPlayerInfo(selectedPlayer).color === "green"
-                        ? "#37b24d"
-                        : getPlayerInfo(selectedPlayer).color === "orange"
-                        ? "#fd7e14"
-                        : "#4c6ef5",
-                  }}
-                >
-                  {getPlayerInfo(selectedPlayer).word}
-                </Title>
-              </Paper>
-              <Text size="sm" mt="md" ta="center" c="dimmed">
-                {getPlayerInfo(selectedPlayer).description}
-              </Text>
-            </Alert>
+                {getPlayerInfo(selectedPlayer).word}
+              </Title>
+            </Paper>
+
+            <Text size="sm" ta="center" c="dimmed">
+              {getPlayerInfo(selectedPlayer).description}
+            </Text>
 
             <Alert icon={<IconEyeOff size={18} />} color="red" variant="light">
               <Text size="sm" ta="center">
